@@ -389,7 +389,17 @@ Qed.
 Theorem SSSSev__even : forall n,
   ev (S (S (S (S n)))) -> ev n.
 Proof.
+intros.
+inversion H  as [|n' H'].
+inversion H'  as [|n'' H''].
+apply H''.
+Qed.
 
 Theorem even5_nonsense:
   ev 5 -> 2 + 2 = 9.
 Proof.
+intros.
+inversion H.
+inversion H1.
+inversion H3.
+Qed.
