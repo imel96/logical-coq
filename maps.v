@@ -13,5 +13,9 @@ Definition t_empty {A:Type} (v : A) : total_map A :=
 
 Notation "{ --> d }" := (t_empty d) (at level 0).
 
-Lemma t_apply_empty: forall (A:Type) (x: string) (v: A), { --> v } x = v.
+(* xxx *)
+Lemma t_apply_empty: forall (A: Type) (x: string) (v: A), { --> v } x = v.
 Proof.
+intros.
+trivial.
+Qed.

@@ -360,7 +360,7 @@ Theorem dist_not_exists : forall (X: Type) (P: X -> Prop),
   (forall x, P x) -> ~ (exists x, ~ P x).
 Proof.
 
-(*
+(* xxx
 Lemma beq_nat_false : forall x y, beq_nat x y = false -> x<>y.
 Proof.
 induction x.

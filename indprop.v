@@ -116,6 +116,7 @@ Definition fst (p : natprod) : nat :=
   match p with
   | pair x y => x
   end.
+
 Definition snd (p : natprod) : nat :=
   match p with
   | pair x y => y
