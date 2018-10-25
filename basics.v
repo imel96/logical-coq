@@ -81,6 +81,16 @@ rewrite -> I.
 reflexivity.
 Qed.
 
+Theorem mult_S_1 : forall n m : nat,
+  m = S n ->
+  m * (1 + n) = m * m.
+Proof.
+intros.
+rewrite -> H.
+simpl.
+reflexivity.
+Qed.
+
 Fixpoint beq_nat (n m : nat) : bool :=
   match n with
   | O => match m with
@@ -93,6 +103,22 @@ Fixpoint beq_nat (n m : nat) : bool :=
             end
   end.
 
+Theorem andb_true_elim2 : forall b c : bool,
+  andb b c = true -> c = true.
+Proof.
+intros b c.
+destruct c.
+intros.
+reflexivity.
+destruct b.
+intros.
+rewrite <- H.
+reflexivity.
+intros.
+rewrite <- H.
+reflexivity.
+Qed.
+
 Theorem zero_nbeq_plus_1 : forall n : nat,
   beq_nat 0 (n + 1) = false.
 Proof.
@@ -100,4 +126,26 @@ intros n.
 destruct n as [ | n'].
 - reflexivity.
 - reflexivity.
+Qed.
+
+Theorem identity_fn_applied_twice:
+  forall (f : bool -> bool), (forall (x : bool), f x = x) -> forall (b : bool), f (f b) = b.
+Proof.
+intros.
+rewrite -> H.
+rewrite -> H.
+reflexivity.
+Qed.
+
+Theorem negation_fn_applied_twice:
+  forall (f : bool -> bool), (forall (x : bool), f x = negb x) -> forall (b : bool), f (f b) = b.
+Proof.
+intros.
+rewrite -> H.
+rewrite -> H.
+destruct b.
+simpl.
+reflexivity.
+simpl.
+reflexivity.
 Qed.
