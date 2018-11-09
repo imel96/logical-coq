@@ -233,4 +233,13 @@ Theorem evenb_S : forall n : nat,
   evenb (S n) = negb (evenb n).
 Proof.
 intros.
-
+induction n as [|n'].
+simpl.
+reflexivity.
+rewrite IHn'.
+simpl.
+rewrite negation_fn_applied_twice.
+reflexivity.
+intros.
+reflexivity.
+Qed.

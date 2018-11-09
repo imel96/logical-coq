@@ -271,3 +271,5 @@ intros H.
 rewrite H.
 reflexivity.
 Qed.
+
+Fixpoint nonzeros (l:natlist) : natlist
