@@ -367,12 +367,13 @@ Fixpoint beq_natlist (l1 l2 : natlist) : bool :=
   match l1 with
   | nil => match l2 with
     | nil => true
-    | l => false
+    | _ => false
   end
-  | l => match l2 with
+  | h1::tl1 => match l2 with
     | nil => false
-    | l => false
-   end
+    | h2::tl2 => if beq_nat h1 h2 then beq_natlist tl1 tl2
+      else false
+  end
 end.
 
 Example test_beq_natlist1 :
@@ -384,4 +385,11 @@ Qed.
 Example test_beq_natlist2 :
   beq_natlist [1;2;3] [1;2;3] = true.
 Proof.
-simpl.
+reflexivity.
+Qed.
+
+Example test_beq_natlist3 :
+  beq_natlist [1;2;3] [1;2;4] = false.
+Proof.
+reflexivity.
+Qed.
