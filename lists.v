@@ -384,4 +384,27 @@ Qed.
 Example test_beq_natlist2 :
   beq_natlist [1;2;3] [1;2;3] = true.
 Proof.
+reflexivity.
+Qed.
+
+Example test_beq_natlist3 :
+  beq_natlist [1;2;3] [1;2;4] = false.
+Proof.
+reflexivity.
+Qed.
+
+Require Import Coq.Arith.EqNat.
+
+Theorem beq_natlist_refl : forall l:natlist,
+  true = beq_natlist l l.
+Proof.
+intros.
+induction l as [|l'].
 simpl.
+reflexivity.
+simpl.
+rewrite <- beq_nat_refl.
+rewrite IHl.
+reflexivity.
+Qed.
+
