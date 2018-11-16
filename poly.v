@@ -307,3 +307,25 @@ Example test_hd_error2 : hd_error [[1];[2]] = Some [1].
 simpl.
 reflexivity.
 Qed.
+
+Fixpoint app {X : Type} (l1 l2 : list X)
+             : (list X) :=
+  match l1 with
+  | nil => l2
+  | cons h t => cons h (app t l2)
+  end.
+
+Notation "x ++ y" := (app x y)
+                     (at level 60, right associativity).
+
+Theorem app_nil_r : forall (X:Type), forall l:list X,
+  l ++ nil = l.
+Proof.
+intros.
+induction l as [|m].
+simpl.
+reflexivity.
+simpl.
+rewrite IHl.
+reflexivity.
+Qed.
