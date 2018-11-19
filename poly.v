@@ -318,6 +318,18 @@ Fixpoint app {X : Type} (l1 l2 : list X)
 Notation "x ++ y" := (app x y)
                      (at level 60, right associativity).
 
+Fixpoint rev {X:Type} (l:list X) : list X :=
+  match l with
+  | nil => nil
+  | cons h t => app (rev t) (cons h nil)
+  end.
+
+Fixpoint length {X : Type} (l : list X) : nat :=
+  match l with
+  | nil => 0
+  | cons _ l' => S (length l')
+  end.
+
 Theorem app_nil_r : forall (X:Type), forall l:list X,
   l ++ nil = l.
 Proof.
@@ -327,5 +339,57 @@ simpl.
 reflexivity.
 simpl.
 rewrite IHl.
+reflexivity.
+Qed.
+
+Theorem app_assoc : forall A (l m n:list A),
+  l ++ m ++ n = (l ++ m) ++ n.
+Proof.
+intros.
+induction l as [|l'].
+simpl.
+reflexivity.
+simpl.
+rewrite IHl.
+reflexivity.
+Qed.
+
+Lemma app_length : forall (X:Type) (l1 l2 : list X),
+  length (l1 ++ l2) = length l1 + length l2.
+Proof.
+intros.
+induction l1 as [|l1'].
+simpl.
+reflexivity.
+simpl.
+rewrite IHl1.
+reflexivity.
+Qed.
+
+Theorem rev_app_distr: forall X (l1 l2 : list X),
+  rev (l1 ++ l2) = rev l2 ++ rev l1.
+Proof.
+intros.
+induction l1.
+simpl.
+rewrite app_nil_r.
+reflexivity.
+simpl.
+rewrite IHl1.
+rewrite app_assoc.
+reflexivity.
+Qed.
+
+Theorem rev_involutive : forall X : Type, forall l : list X,
+  rev (rev l) = l.
+Proof.
+intros.
+induction l.
+simpl.
+reflexivity.
+simpl.
+rewrite rev_app_distr.
+rewrite IHl.
+simpl.
 reflexivity.
 Qed.
