@@ -393,3 +393,78 @@ rewrite IHl.
 simpl.
 reflexivity.
 Qed.
+
+Inductive prod (X Y : Type) : Type :=
+| pair : X -> Y -> prod X Y.
+
+Arguments pair {X} {Y} _ _.
+Notation "( x , y )" := (pair x y).
+Notation "X * Y" := (prod X Y) : type_scope.
+
+Notation "x :: y" := (cons x y)
+                     (at level 60, right associativity).
+
+Definition fst {X Y : Type} (p : X * Y) : X :=
+  match p with
+  | (x, y) => x
+  end.
+
+Definition snd {X Y : Type} (p : X * Y) : Y :=
+  match p with
+  | (x, y) => y
+  end.
+
+Fixpoint split {X Y : Type} (l : list (X*Y))
+               : (list X) * (list Y) :=
+  match l with
+  | nil => (nil, nil)
+  | (x, y)::tl => (x::fst(split tl), y::snd(split tl))
+  end.
+
+Example test_split:
+  split [(1,false);(2,false)] = ([1;2],[false;false]).
+Proof.
+simpl.
+reflexivity.
+Qed.
+
+Fixpoint evenb (n:nat) : bool :=
+  match n with
+  | O => true
+  | S O => false
+  | S (S n') => evenb n'
+  end.
+
+Fixpoint filter {X:Type} (test: X -> bool) (l:list X)
+  : (list X) :=
+  match l with
+  | nil => nil
+  | h :: t => if test h then h :: (filter test t)
+    else filter test t
+  end.
+
+Definition gt7 (x : nat) : bool :=
+  match leb x 7 with
+  | true => false
+  | false => true
+  end.
+
+Definition filter_even_gt7 (l : list nat) : list nat :=
+  match l with
+  | nil => nil
+  | x::tl => filter evenb (filter gt7 l)
+  end.
+
+Example test_filter_even_gt7_1 :
+  filter_even_gt7 [1;2;6;9;10;3;12;8] = [10;12;8].
+Proof.
+simpl.
+reflexivity.
+Qed.
+
+Example test_filter_even_gt7_2 :
+  filter_even_gt7 [5;2;6;19;129] = nil.
+Proof.
+simpl.
+reflexivity.
+Qed.
