@@ -443,8 +443,8 @@ Fixpoint filter {X:Type} (test: X -> bool) (l:list X)
     else filter test t
   end.
 
-Definition gt7 (x : nat) : bool :=
-  match leb x 7 with
+Definition gt (x y: nat) : bool :=
+  match leb x y with
   | true => false
   | false => true
   end.
@@ -452,7 +452,7 @@ Definition gt7 (x : nat) : bool :=
 Definition filter_even_gt7 (l : list nat) : list nat :=
   match l with
   | nil => nil
-  | x::tl => filter evenb (filter gt7 l)
+  | x::tl => filter evenb (filter (fun x => gt x 7) l)
   end.
 
 Example test_filter_even_gt7_1 :
@@ -465,6 +465,72 @@ Qed.
 Example test_filter_even_gt7_2 :
   filter_even_gt7 [5;2;6;19;129] = nil.
 Proof.
+simpl.
+reflexivity.
+Qed.
+
+Fixpoint flat_map {X Y: Type} (f: X -> list Y) (l: list X) : (list Y) :=
+  match l with
+  | nil => nil
+  | h::tl => (f h) ++ (flat_map f tl)
+  end.
+
+Example test_flat_map1:
+  flat_map (fun n => [n;n;n]) [1;5;4] = [1; 1; 1; 5; 5; 5; 4; 4; 4].
+Proof.
+simpl.
+reflexivity.
+Qed.
+
+Fixpoint fold {X Y: Type} (f : X -> Y -> Y) (l : list X) (b : Y) : Y :=
+  match l with
+  | nil => b
+  | h :: t => f h (fold f t b)
+  end.
+
+Print fold.
+Definition fold_length {X : Type} (l : list X) : nat :=
+  fold (fun _ n => S n) l 0.
+Example test_fold_length1 : fold_length [4;7;0] = 3.
+Proof. reflexivity. Qed.
+
+Theorem fold_length_correct : forall X (l : list X),
+  fold_length l = length l.
+Proof.
+unfold fold_length.
+unfold length.
+intros.
+induction l.
+simpl.
+reflexivity.
+rewrite <- IHl.
+simpl.
+reflexivity.
+Qed.
+
+Definition prod_curry {X Y Z : Type}
+	(f : X * Y -> Z) (x : X) (y : Y) : Z := f (x, y).
+
+Definition prod_uncurry {X Y Z : Type} (f : X -> Y -> Z) (p : X * Y) : Z :=
+	f (fst p) (snd p).
+
+Theorem uncurry_curry : forall (X Y Z : Type) (f : X -> Y -> Z) x y,
+  prod_curry (prod_uncurry f) x y = f x y.
+Proof.
+unfold prod_curry.
+unfold prod_uncurry.
+intros.
+simpl.
+reflexivity.
+Qed.
+
+Theorem curry_uncurry : forall (X Y Z : Type) (f : (X * Y) -> Z) (p : X * Y),
+	prod_uncurry (prod_curry f) p = f p.
+Proof.
+unfold prod_curry.
+unfold prod_uncurry.
+intros.
+destruct p as [x y].
 simpl.
 reflexivity.
 Qed.
