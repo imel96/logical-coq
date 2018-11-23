@@ -308,8 +308,29 @@ simpl.
 reflexivity.
 Qed.
 
+Fixpoint evenb (n:nat) : bool :=
+	match n with
+	| O => true
+	| S O => false
+	| S (S n') => evenb n'
+	end.
+
+Fixpoint oddb (n:nat) : bool :=
+	match evenb n with
+	| true => false
+	| false => true
+	end.
+
 Notation "x :: y" := (cons x y)
                      (at level 60, right associativity).
+
+Theorem silly_ex : (forall n, evenb n = true -> oddb (S n) = true) ->
+     oddb 3 = true ->
+     evenb 4 = true.
+Proof.
+intros.
+apply H0.
+Qed.
 
 Example inversion_ex3 : forall (X : Type) (x y z w : X) (l j : list X),
   x :: y :: l = w :: z :: j ->
@@ -334,3 +355,23 @@ intros H.
 inversion H.
 Qed.
 
+Theorem beq_nat_true : forall n m,
+    beq_nat n m = true -> n = m.
+Proof.
+intros n.
+induction n.
+simpl.
+destruct m as [|q].
+intros.
+reflexivity.
+intros.
+inversion H.
+destruct m.
+intros.
+inversion H.
+intros.
+apply f_equal.
+apply IHn.
+inversion H.
+reflexivity.
+Qed.
