@@ -375,3 +375,28 @@ apply IHn.
 inversion H.
 reflexivity.
 Qed.
+
+Theorem bool_fn_applied_thrice : forall (f : bool -> bool) (b : bool),
+	f (f (f b)) = f b.
+Proof.
+intros.
+destruct b.
+destruct (f true) eqn : ft.
+rewrite ft.
+rewrite ft.
+reflexivity.
+destruct (f false) eqn : ff.
+rewrite ft.
+reflexivity.
+rewrite ff.
+reflexivity.
+destruct (f false) eqn : ff.
+destruct (f true) eqn : ft.
+rewrite ft.
+reflexivity.
+rewrite ff.
+reflexivity.
+rewrite ff.
+rewrite ff.
+reflexivity.
+Qed.
