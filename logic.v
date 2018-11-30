@@ -334,6 +334,22 @@ intros H.
 inversion H.
 Qed.
 
+Example and_exercise : forall n m : nat, n + m = 0 -> n = 0 /\ m = 0.
+Proof.
+intros.
+split.
+induction n as [| n'].
+reflexivity.
+inversion H.
+induction m as [| m'].
+reflexivity.
+inversion H.
+induction n as [| n'].
+simpl.
+reflexivity.
+inversion H.
+Qed.
+
 Lemma proj2 : forall P Q : Prop,
   P /\ Q -> Q.
 Proof.
@@ -342,11 +358,31 @@ intros H.
 apply H.
 Qed.
 
+Theorem and_assoc : forall P Q R : Prop,
+  P /\ (Q /\ R) -> (P /\ Q) /\ R.
+Proof.
+intros P Q R [HP [HQ HR]].
+split.
+split.
+apply HP.
+apply HQ.
+apply HR.
+Qed.
+
+Fact not_implies_our_not : forall (P:Prop),
+  ~ P -> (forall (Q : Prop), P -> Q).
+Proof.
+intros.
+apply H in H0.
+destruct H0.
+Qed.
+
 Theorem contradiction_implies_anything : forall P Q : Prop,
   (P /\ ~P) -> Q.
 Proof.
   intros P Q [HP HNA]. unfold not in HNA.
   apply HNA in HP. destruct HP. Qed.
+
 
 Theorem not_both_true_and_false : forall P : Prop,
   ~(P /\ ~P).
