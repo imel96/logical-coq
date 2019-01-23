@@ -377,6 +377,17 @@ apply H in H0.
 destruct H0.
 Qed.
 
+
+Theorem contrapositive : forall (P Q : Prop),
+  (P -> Q) -> (~Q -> ~P).
+Proof.
+intros.
+intro.
+apply H0.
+apply H.
+exact H1.
+Qed.
+
 Theorem contradiction_implies_anything : forall P Q : Prop,
   (P /\ ~P) -> Q.
 Proof.
@@ -395,7 +406,21 @@ Qed.
 Theorem dist_not_exists : forall (X: Type) (P: X -> Prop),
   (forall x, P x) -> ~ (exists x, ~ P x).
 Proof.
+intros.
+unfold not.
+intro.
+inversion H0 as [ x Hx ].
+apply Hx.
+apply H.
+Qed.
 
+(*
+Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
+  (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
+Proof.
+intros.
+split.
+*)
 (* xxx
 Lemma beq_nat_false : forall x y, beq_nat x y = false -> x<>y.
 Proof.
