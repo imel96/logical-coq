@@ -414,13 +414,37 @@ apply Hx.
 apply H.
 Qed.
 
-(*
+
+Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
+  (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
+Proof.
+
 Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
   (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
 Proof.
 intros.
 split.
-*)
+intros.
+destruct H.
+destruct H.
+left.
+exists x.
+apply H.
+right.
+exists x.
+apply H.
+intros.
+destruct H.
+destruct H.
+exists x.
+left.
+apply H.
+inversion H.
+exists x.
+right.
+apply H0.
+Qed.
+
 (* xxx
 Lemma beq_nat_false : forall x y, beq_nat x y = false -> x<>y.
 Proof.
