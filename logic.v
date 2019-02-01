@@ -377,7 +377,6 @@ apply H in H0.
 destruct H0.
 Qed.
 
-
 Theorem contrapositive : forall (P Q : Prop),
   (P -> Q) -> (~Q -> ~P).
 Proof.
@@ -393,7 +392,6 @@ Theorem contradiction_implies_anything : forall P Q : Prop,
 Proof.
   intros P Q [HP HNA]. unfold not in HNA.
   apply HNA in HP. destruct HP. Qed.
-
 
 Theorem not_both_true_and_false : forall P : Prop,
   ~(P /\ ~P).
@@ -413,11 +411,6 @@ inversion H0 as [ x Hx ].
 apply Hx.
 apply H.
 Qed.
-
-
-Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
-  (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
-Proof.
 
 Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
   (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
@@ -444,6 +437,23 @@ exists x.
 right.
 apply H0.
 Qed.
+
+End OptionPlayground.
+
+Require Import Coq.Lists.List.
+
+Lemma In_map_iff : forall (A B : Type) (f : A -> B) (l : list A) (y : B),
+	In y (map f l) <-> exists x, f x = y /\ In x l.
+Proof.
+intros.
+split.
+intros.
+induction l.
+simpl.
+inversion H.
+simpl.
+
+
 
 (* xxx
 Lemma beq_nat_false : forall x y, beq_nat x y = false -> x<>y.
