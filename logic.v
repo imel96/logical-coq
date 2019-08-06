@@ -440,37 +440,29 @@ Qed.
 
 End OptionPlayground.
 
-Require Import Coq.Lists.List.
-
-Lemma In_map_iff : forall (A B : Type) (f : A -> B) (l : list A) (y : B),
-	In y (map f l) <-> exists x, f x = y /\ In x l.
+Lemma andb_true_iff :
+  forall b1 b2:bool, andb b1 b2 = true <-> b1 = true /\ b2 = true.
 Proof.
-intros.
 split.
-intros.
-induction l.
-simpl.
-inversion H.
-simpl.
-
-
-
-(* xxx
-Lemma beq_nat_false : forall x y, beq_nat x y = false -> x<>y.
-Proof.
-induction x.
-destruct y.
-discriminate.
-intros.
-discriminate.
-intros.
-apply H.
+	split.
+		destruct b1.
+		reflexivity.
+		discriminate.
+		destruct b2.
+		reflexivity.
+		inversion H.
+		destruct b1.
+		reflexivity.
+		reflexivity.
+	intros.
+	destruct b1.
+	destruct b2.
+	reflexivity.
+	inversion H.
+	apply H1.
+	destruct b2.
+	inversion H.
+	apply H0.
+	inversion H.
+	apply H1.
 Qed.
-
-Theorem beq_nat_false_iff : forall x y : nat,
-  beq_nat x y = false <-> x <> y.
-Proof.
-intros.
-split.
-apply beq_nat_false.
-*)
