@@ -446,23 +446,43 @@ Proof.
 split.
 	split.
 		destruct b1.
-		reflexivity.
-		discriminate.
+			reflexivity.
+			discriminate.
+			destruct b2.
+				reflexivity.
+				inversion H.
+			destruct b1.
+				reflexivity.
+				reflexivity.
+	intros.
+	destruct b1.
 		destruct b2.
 		reflexivity.
 		inversion H.
-		destruct b1.
-		reflexivity.
-		reflexivity.
+		apply H1.
+		destruct b2.
+			inversion H.
+			apply H0.
+			inversion H.
+			apply H1.
+Qed.
+
+Lemma orb_true_iff : forall b1 b2,
+  orb b1 b2 = true <-> b1 = true \/ b2 = true.
+Proof.
+split.
 	intros.
 	destruct b1.
-	destruct b2.
-	reflexivity.
-	inversion H.
-	apply H1.
-	destruct b2.
-	inversion H.
-	apply H0.
-	inversion H.
-	apply H1.
-Qed.
+		left. reflexivity.
+		destruct b2.
+			right. reflexivity.
+			discriminate.
+
+	intros.
+	destruct b1.
+		reflexivity.
+		inversion H.
+		destruct b2.
+			reflexivity.
+			discriminate.
+			apply H0.
