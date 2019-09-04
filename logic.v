@@ -359,23 +359,11 @@ Qed.
 Theorem dist_not_exists : forall (X: Type) (P: X -> Prop),
   (forall x, P x) -> ~ (exists x, ~ P x).
 Proof.
-
-(* xxx
-Lemma beq_nat_false : forall x y, beq_nat x y = false -> x<>y.
-Proof.
-induction x.
-destruct y.
-discriminate.
 intros.
-discriminate.
-intros.
+unfold not.
+intro.
+inversion H0 as [ x Hx ].
+apply Hx.
 apply H.
 Qed.
 
-Theorem beq_nat_false_iff : forall x y : nat,
-  beq_nat x y = false <-> x <> y.
-Proof.
-intros.
-split.
-apply beq_nat_false.
-*)
