@@ -334,6 +334,15 @@ intros H.
 inversion H.
 Qed.
 
+End OptionPlayground.
+
+Theorem contradiction_implies_anything : forall P Q : Prop,
+  (P /\ ~P) -> Q.
+Proof.
+  intros P Q [HP HNA]. unfold not in HNA.
+  apply HNA in HP. destruct HP.
+Qed.
+
 Lemma proj2 : forall P Q : Prop,
   P /\ Q -> Q.
 Proof.
@@ -341,12 +350,6 @@ intros P Q.
 intros H.
 apply H.
 Qed.
-
-Theorem contradiction_implies_anything : forall P Q : Prop,
-  (P /\ ~P) -> Q.
-Proof.
-  intros P Q [HP HNA]. unfold not in HNA.
-  apply HNA in HP. destruct HP. Qed.
 
 Theorem not_both_true_and_false : forall P : Prop,
   ~(P /\ ~P).
