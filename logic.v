@@ -19,56 +19,11 @@ match b1 with
   | false => false
   end.
 
-Definition minustwo (n : nat) : nat :=
-  match n with
-    | O => O
-    | S O => O
-    | S (S n') => n'
-  end.
-Compute (minustwo 1).
-
 Fixpoint factorial (n: nat) : nat :=
   match n with
     | 0 => 1
     | S n => S n * factorial n
   end.
-
-Fixpoint plus (n : nat) (m : nat) : nat :=
-  match n with
-    | O => m
-    | S n => S (plus n m)
-  end.
-
-Compute (plus 4 4).
-
-Fixpoint leb (n m : nat) : bool :=
-  match n with
-  | O => true
-  | S n' =>
-      match m with
-      | O => false
-      | S m' => leb n' m'
-      end
-  end.
-
-Definition blt_nat (n m : nat) : bool :=
-  match n with
-    | 0 => match m with
-      | 0 => false
-      | S m' => leb n m'
-      end
-    | S n' => match m with
-      | 0 => false
-      | S m' => leb n m'
-     end
-  end.
-
-Example test_blt_nat1: (blt_nat 2 2) = false.
-Proof. simpl. reflexivity. Qed.
-Example test_blt_nat2: (blt_nat 2 4) = true.
-Proof. simpl. reflexivity. Qed.
-Example test_blt_nat3: (blt_nat 4 2) = false.
-Proof. simpl. reflexivity. Qed.
 
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
@@ -169,6 +124,16 @@ simpl.
 reflexivity.
 Qed.
 
+Fixpoint leb (n m : nat) : bool :=
+  match n with
+  | O => true
+  | S n' =>
+      match m with
+      | O => false
+      | S m' => leb n' m'
+      end
+  end.
+
 Theorem count_member_nonzero : forall (s : bag),
   leb 1 (count 1 (1 :: s)) = true.
 Proof.
@@ -220,12 +185,12 @@ Qed.
 Inductive id : Type :=
   | Id : nat -> id.
 
-Definition beq_id (x1 x2 : id) :=
+Definition eqb_id (x1 x2 : id) :=
   match x1, x2 with
   | Id n1, Id n2 => beq_nat n1 n2
   end.
 
-Theorem beq_id_refl : forall x, true = beq_id x x.
+Theorem eqb_id_refl : forall x, true = eqb_id x x.
 Proof.
 intros x.
 destruct x.
@@ -244,7 +209,7 @@ Inductive partial_map : Type :=
 Fixpoint find (x : id) (d : partial_map) : natoption :=
   match d with
     | empty => None
-    | record y v d' => if beq_id x y
+    | record y v d' => if eqb_id x y
       then Some v
       else find x d'
   end.
@@ -258,12 +223,12 @@ Proof.
 intros d x v.
 unfold update.
 simpl.
-rewrite <- beq_id_refl.
+rewrite <- eqb_id_refl.
 reflexivity.
 Qed.
 
 Theorem update_neq: forall (d: partial_map) (x y: id) (o: nat),
-    beq_id x y = false -> find x (update d y o) = find x d.
+    eqb_id x y = false -> find x (update d y o) = find x d.
 Proof.
 intros d x y o.
 simpl.
@@ -369,4 +334,3 @@ inversion H0 as [ x Hx ].
 apply Hx.
 apply H.
 Qed.
-
