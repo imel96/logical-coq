@@ -25,6 +25,39 @@ Fixpoint factorial (n: nat) : nat :=
     | S n => S n * factorial n
   end.
 
+Fixpoint leb (n m : nat) : bool :=
+  match n with
+  | O => true
+  | S n' =>
+      match m with
+      | O => false
+      | S m' => leb n' m'
+      end
+  end.
+
+Notation "x <=? y" := (leb x y) (at level 70) : nat_scope.
+
+Definition ltb (n m : nat) : bool :=
+	match n <=? m with
+	| false => false
+	| true => negb(m <=? n)
+	end.
+
+Example test_ltb1: (ltb 2 2) = false.
+Proof.
+reflexivity.
+Qed.
+
+Example test_ltb2: (ltb 2 4) = true.
+Proof.
+reflexivity.
+Qed.
+
+Example test_ltb3: (ltb 4 2) = false.
+Proof.
+reflexivity.
+Qed.
+
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
 Proof.
@@ -55,6 +88,34 @@ intros n.
 destruct n as [ | n'].
 - reflexivity.
 - reflexivity.
+Qed.
+
+Theorem identity_fn_applied_twice :
+	forall (f : bool -> bool), (forall (x : bool), f x = x) ->
+		forall (b : bool), f (f b) = b.
+Proof.
+intros.
+rewrite H.
+rewrite H.
+reflexivity.
+Qed.
+
+Theorem negation_fn_applied_twice :
+	forall (f : bool -> bool), (forall (x : bool), f x = negb x) ->
+		forall (b : bool), f (f b) = b.
+Proof.
+intros.
+destruct b.
+	(* case b = true *)
+	rewrite H.
+	rewrite H.
+	simpl.
+	reflexivity.
+	(* case b = false *)
+	rewrite H.
+	rewrite H.
+	simpl.
+	reflexivity.
 Qed.
 
 Inductive natprod : Type :=
@@ -123,16 +184,6 @@ Example test_count2: count 6 [1;2;3;1;4;1] = 0.
 simpl.
 reflexivity.
 Qed.
-
-Fixpoint leb (n m : nat) : bool :=
-  match n with
-  | O => true
-  | S n' =>
-      match m with
-      | O => false
-      | S m' => leb n' m'
-      end
-  end.
 
 Theorem count_member_nonzero : forall (s : bag),
   leb 1 (count 1 (1 :: s)) = true.

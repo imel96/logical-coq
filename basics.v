@@ -25,18 +25,6 @@ Fixpoint factorial (n: nat) : nat :=
     | S n => S n * factorial n
   end.
 
-Fixpoint eqb (n m : nat) : bool :=
-  match n with
-  | O => match m with
-         | O => true
-         | S m' => false
-         end
-  | S n' => match m with
-            | O => false
-            | S m' => eqb n' m'
-            end
-  end.
-
 Fixpoint leb (n m : nat) : bool :=
   match n with
   | O => true
@@ -47,13 +35,12 @@ Fixpoint leb (n m : nat) : bool :=
       end
   end.
 
-Notation "x =? y" := (eqb x y) (at level 70) : nat_scope.
 Notation "x <=? y" := (leb x y) (at level 70) : nat_scope.
 
 Definition ltb (n m : nat) : bool :=
 	match n <=? m with
 	| false => false
-	| true => negb(n =? m)
+	| true => negb(m <=? n)
 	end.
 
 Example test_ltb1: (ltb 2 2) = false.
@@ -108,8 +95,25 @@ Theorem identity_fn_applied_twice :
 		forall (b : bool), f (f b) = b.
 Proof.
 intros.
-simpl.
 rewrite H.
 rewrite H.
 reflexivity.
+Qed.
+
+Theorem negation_fn_applied_twice :
+	forall (f : bool -> bool), (forall (x : bool), f x = negb x) ->
+		forall (b : bool), f (f b) = b.
+Proof.
+intros.
+destruct b.
+	(* case b = true *)
+	rewrite H.
+	rewrite H.
+	simpl.
+	reflexivity.
+	(* case b = false *)
+	rewrite H.
+	rewrite H.
+	simpl.
+	reflexivity.
 Qed.
