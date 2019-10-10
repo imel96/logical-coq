@@ -323,3 +323,36 @@ Example test_hd_error2 : hd_error [[1];[2]] = Some [1].
 simpl.
 reflexivity.
 Qed.
+
+Definition cnat := forall X : Type, (X -> X) -> X -> X.
+
+Definition zero : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => x.
+
+Definition one : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => f x.
+
+Definition two : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => f (f x).
+
+Definition succ (n : cnat) : cnat :=
+	fun (X : Type) (f : X -> X) (x : X) => f (n X f x).
+
+Definition doit3times (X : Type) (f : X -> X) (n : X) : X :=
+  f (f (f n)).
+
+Definition three : cnat := @doit3times.
+
+Example succ_1 : succ zero = one.
+Proof.
+reflexivity.
+Qed.
+
+Example succ_2 : succ one = two.
+Proof.
+reflexivity.
+Qed.
+
+Example succ_3 : succ two = three.
+reflexivity.
+Qed.
