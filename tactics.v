@@ -324,6 +324,39 @@ simpl.
 reflexivity.
 Qed.
 
+Definition cnat := forall X : Type, (X -> X) -> X -> X.
+
+Definition zero : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => x.
+
+Definition one : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => f x.
+
+Definition two : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => f (f x).
+
+Definition succ (n : cnat) : cnat :=
+	fun (X : Type) (f : X -> X) (x : X) => f (n X f x).
+
+Definition doit3times (X : Type) (f : X -> X) (n : X) : X :=
+  f (f (f n)).
+
+Definition three : cnat := @doit3times.
+
+Example succ_1 : succ zero = one.
+Proof.
+reflexivity.
+Qed.
+
+Example succ_2 : succ one = two.
+Proof.
+reflexivity.
+Qed.
+
+Example succ_3 : succ two = three.
+reflexivity.
+Qed.
+
 Notation "x :: y" := (cons x y)
                      (at level 60, right associativity).
 
@@ -332,10 +365,20 @@ Example injection_ex3 : forall (X : Type) (x y z w : X) (l j : list X),
   x :: l = z :: j ->
   x = y.
 Proof.
-intros X x y z w l j.
-intros H.
-intros G.
-inversion G.
-inversion H.
-reflexivity.
+intros.
+injection H.
+intros.
+injection H0.
+rewrite H2.
+intros.
+apply H5.
+Qed.
+
+Example discriminate_ex3 :
+  forall (X : Type) (x y z : X) (l j : list X),
+    x :: y :: l = nil ->
+    x = z.
+Proof.
+intros.
+discriminate.
 Qed.
