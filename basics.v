@@ -41,6 +41,30 @@ Fixpoint plus (n : nat) (m : nat) : nat :=
 
 Compute (plus 4 4).
 
+Fixpoint mult (n m : nat) : nat :=
+  match n with
+  | O => O
+  | S n' => plus m (mult n' m)
+  end.
+Example test_mult1: (mult 3 3) = 9.
+Proof. simpl. reflexivity. Qed.
+
+Notation "x * y" := (mult x y)
+            (at level 40, left associativity)
+            : nat_scope.
+
+Print mult_n_O.
+Print mult_n_Sm.
+
+Theorem mult_n_1 : forall p : nat,
+  mult p (S O) = p.
+Proof.
+intros.
+rewrite <- mult_n_Sm.
+rewrite <- mult_n_O.
+reflexivity.
+Qed.
+
 Fixpoint leb (n m : nat) : bool :=
   match n with
   | O => true
@@ -73,11 +97,9 @@ Proof. simpl. reflexivity. Qed.
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
 Proof.
-intros n m o.
-intros H.
+intros.
 rewrite -> H.
-intros I.
-rewrite -> I.
+rewrite -> H0.
 reflexivity.
 Qed.
 
@@ -122,7 +144,7 @@ Qed.
 Theorem zero_nbeq_plus_1 : forall n : nat,
   beq_nat 0 (n + 1) = false.
 Proof.
-intros n.
+intros.
 destruct n as [ | n'].
 - reflexivity.
 - reflexivity.
