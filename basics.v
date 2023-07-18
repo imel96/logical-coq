@@ -121,22 +121,6 @@ Fixpoint beq_nat (n m : nat) : bool :=
             end
   end.
 
-Theorem andb_true_elim2 : forall b c : bool,
-  andb b c = true -> c = true.
-Proof.
-intros b c.
-destruct c.
-intros.
-reflexivity.
-destruct b.
-intros.
-rewrite <- H.
-reflexivity.
-intros.
-rewrite <- H.
-reflexivity.
-Qed.
-
 Theorem zero_nbeq_plus_1 : forall n : nat,
   beq_nat 0 (n + 1) = false.
 Proof.
@@ -172,4 +156,41 @@ destruct b.
 	rewrite H.
 	simpl.
 	reflexivity.
+Qed.
+
+Inductive comparison : Set :=
+  | Eq : comparison (* "equal" *)
+  | Lt : comparison (* "less than" *)
+  | Gt : comparison.
+
+Inductive letter : Type :=
+  | A | B | C | D | F.
+
+Definition letter_comparison (l1 l2 : letter) : comparison :=
+  match l1, l2 with
+  | A, A => Eq
+  | A, _ => Gt
+  | B, A => Lt
+  | B, B => Eq
+  | B, _ => Gt
+  | C, (A | B) => Lt
+  | C, C => Eq
+  | C, _ => Gt
+  | D, (A | B | C) => Lt
+  | D, D => Eq
+  | D, _ => Gt
+  | F, (A | B | C | D) => Lt
+  | F, F => Eq
+  end.
+
+Theorem letter_comparison_Eq :
+  forall l, letter_comparison l l = Eq.
+Proof.
+intros.
+destruct l.
+reflexivity.
+reflexivity.
+reflexivity.
+reflexivity.
+reflexivity.
 Qed.
