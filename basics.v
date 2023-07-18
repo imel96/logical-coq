@@ -19,14 +19,6 @@ match b1 with
   | false => false
   end.
 
-Definition minustwo (n : nat) : nat :=
-  match n with
-    | O => O
-    | S O => O
-    | S (S n') => n'
-  end.
-Compute (minustwo 1).
-
 Fixpoint factorial (n: nat) : nat :=
   match n with
     | 0 => 1
@@ -75,24 +67,28 @@ Fixpoint leb (n m : nat) : bool :=
       end
   end.
 
-Definition blt_nat (n m : nat) : bool :=
-  match n with
-    | 0 => match m with
-      | 0 => false
-      | S m' => leb n m'
-      end
-    | S n' => match m with
-      | 0 => false
-      | S m' => leb n m'
-     end
-  end.
+Notation "x <=? y" := (leb x y) (at level 70) : nat_scope.
 
-Example test_blt_nat1: (blt_nat 2 2) = false.
-Proof. simpl. reflexivity. Qed.
-Example test_blt_nat2: (blt_nat 2 4) = true.
-Proof. simpl. reflexivity. Qed.
-Example test_blt_nat3: (blt_nat 4 2) = false.
-Proof. simpl. reflexivity. Qed.
+Definition ltb (n m : nat) : bool :=
+	match n <=? m with
+	| false => false
+	| true => negb(m <=? n)
+	end.
+
+Example test_ltb1: (ltb 2 2) = false.
+Proof.
+reflexivity.
+Qed.
+
+Example test_ltb2: (ltb 2 4) = true.
+Proof.
+reflexivity.
+Qed.
+
+Example test_ltb3: (ltb 4 2) = false.
+Proof.
+reflexivity.
+Qed.
 
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
@@ -150,24 +146,30 @@ destruct n as [ | n'].
 - reflexivity.
 Qed.
 
-Theorem identity_fn_applied_twice:
-  forall (f : bool -> bool), (forall (x : bool), f x = x) -> forall (b : bool), f (f b) = b.
+Theorem identity_fn_applied_twice :
+	forall (f : bool -> bool), (forall (x : bool), f x = x) ->
+		forall (b : bool), f (f b) = b.
 Proof.
 intros.
-rewrite -> H.
-rewrite -> H.
+rewrite H.
+rewrite H.
 reflexivity.
 Qed.
 
-Theorem negation_fn_applied_twice:
-  forall (f : bool -> bool), (forall (x : bool), f x = negb x) -> forall (b : bool), f (f b) = b.
+Theorem negation_fn_applied_twice :
+	forall (f : bool -> bool), (forall (x : bool), f x = negb x) ->
+		forall (b : bool), f (f b) = b.
 Proof.
 intros.
-rewrite -> H.
-rewrite -> H.
 destruct b.
-simpl.
-reflexivity.
-simpl.
-reflexivity.
+	(* case b = true *)
+	rewrite H.
+	rewrite H.
+	simpl.
+	reflexivity.
+	(* case b = false *)
+	rewrite H.
+	rewrite H.
+	simpl.
+	reflexivity.
 Qed.

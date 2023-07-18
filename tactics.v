@@ -19,27 +19,11 @@ match b1 with
   | false => false
   end.
 
-Definition minustwo (n : nat) : nat :=
-  match n with
-    | O => O
-    | S O => O
-    | S (S n') => n'
-  end.
-Compute (minustwo 1).
-
 Fixpoint factorial (n: nat) : nat :=
   match n with
     | 0 => 1
     | S n => S n * factorial n
   end.
-
-Fixpoint plus (n : nat) (m : nat) : nat :=
-  match n with
-    | O => m
-    | S n => S (plus n m)
-  end.
-
-Compute (plus 4 4).
 
 Fixpoint leb (n m : nat) : bool :=
   match n with
@@ -51,24 +35,28 @@ Fixpoint leb (n m : nat) : bool :=
       end
   end.
 
-Definition blt_nat (n m : nat) : bool :=
-  match n with
-    | 0 => match m with
-      | 0 => false
-      | S m' => leb n m'
-      end
-    | S n' => match m with
-      | 0 => false
-      | S m' => leb n m'
-     end
-  end.
+Notation "x <=? y" := (leb x y) (at level 70) : nat_scope.
 
-Example test_blt_nat1: (blt_nat 2 2) = false.
-Proof. simpl. reflexivity. Qed.
-Example test_blt_nat2: (blt_nat 2 4) = true.
-Proof. simpl. reflexivity. Qed.
-Example test_blt_nat3: (blt_nat 4 2) = false.
-Proof. simpl. reflexivity. Qed.
+Definition ltb (n m : nat) : bool :=
+	match n <=? m with
+	| false => false
+	| true => negb(m <=? n)
+	end.
+
+Example test_ltb1: (ltb 2 2) = false.
+Proof.
+reflexivity.
+Qed.
+
+Example test_ltb2: (ltb 2 4) = true.
+Proof.
+reflexivity.
+Qed.
+
+Example test_ltb3: (ltb 4 2) = false.
+Proof.
+reflexivity.
+Qed.
 
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
@@ -100,6 +88,34 @@ intros n.
 destruct n as [ | n'].
 - reflexivity.
 - reflexivity.
+Qed.
+
+Theorem identity_fn_applied_twice :
+	forall (f : bool -> bool), (forall (x : bool), f x = x) ->
+		forall (b : bool), f (f b) = b.
+Proof.
+intros.
+rewrite H.
+rewrite H.
+reflexivity.
+Qed.
+
+Theorem negation_fn_applied_twice :
+	forall (f : bool -> bool), (forall (x : bool), f x = negb x) ->
+		forall (b : bool), f (f b) = b.
+Proof.
+intros.
+destruct b.
+	(* case b = true *)
+	rewrite H.
+	rewrite H.
+	simpl.
+	reflexivity.
+	(* case b = false *)
+	rewrite H.
+	rewrite H.
+	simpl.
+	reflexivity.
 Qed.
 
 Inductive natprod : Type :=
@@ -220,12 +236,12 @@ Qed.
 Inductive id : Type :=
   | Id : nat -> id.
 
-Definition beq_id (x1 x2 : id) :=
+Definition eqb_id (x1 x2 : id) :=
   match x1, x2 with
   | Id n1, Id n2 => beq_nat n1 n2
   end.
 
-Theorem beq_id_refl : forall x, true = beq_id x x.
+Theorem eqb_id_refl : forall x, true = eqb_id x x.
 Proof.
 intros x.
 destruct x.
@@ -244,7 +260,7 @@ Inductive partial_map : Type :=
 Fixpoint find (x : id) (d : partial_map) : natoption :=
   match d with
     | empty => None
-    | record y v d' => if beq_id x y
+    | record y v d' => if eqb_id x y
       then Some v
       else find x d'
   end.
@@ -258,12 +274,12 @@ Proof.
 intros d x v.
 unfold update.
 simpl.
-rewrite <- beq_id_refl.
+rewrite <- eqb_id_refl.
 reflexivity.
 Qed.
 
 Theorem update_neq: forall (d: partial_map) (x y: id) (o: nat),
-    beq_id x y = false -> find x (update d y o) = find x d.
+    eqb_id x y = false -> find x (update d y o) = find x d.
 Proof.
 intros d x y o.
 simpl.
@@ -308,29 +324,61 @@ simpl.
 reflexivity.
 Qed.
 
+Definition cnat := forall X : Type, (X -> X) -> X -> X.
+
+Definition zero : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => x.
+
+Definition one : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => f x.
+
+Definition two : cnat :=
+  fun (X : Type) (f : X -> X) (x : X) => f (f x).
+
+Definition succ (n : cnat) : cnat :=
+	fun (X : Type) (f : X -> X) (x : X) => f (n X f x).
+
+Definition doit3times (X : Type) (f : X -> X) (n : X) : X :=
+  f (f (f n)).
+
+Definition three : cnat := @doit3times.
+
+Example succ_1 : succ zero = one.
+Proof.
+reflexivity.
+Qed.
+
+Example succ_2 : succ one = two.
+Proof.
+reflexivity.
+Qed.
+
+Example succ_3 : succ two = three.
+reflexivity.
+Qed.
+
 Notation "x :: y" := (cons x y)
                      (at level 60, right associativity).
 
-Example inversion_ex3 : forall (X : Type) (x y z w : X) (l j : list X),
+Example injection_ex3 : forall (X : Type) (x y z w : X) (l j : list X),
   x :: y :: l = w :: z :: j ->
   x :: l = z :: j ->
   x = y.
 Proof.
-intros X x y z w l j.
-intros H.
-intros G.
-inversion G.
-inversion H.
-reflexivity.
+intros.
+injection H.
+intros.
+injection H0.
+rewrite H2.
+intros.
+apply H5.
 Qed.
 
-Example inversion_ex6 : forall (X : Type) (x y z : X) (l j : list X),
-  x :: y :: l = nil ->
-  y :: l = z :: j ->
-  x = z.
+Example discriminate_ex3 :
+  forall (X : Type) (x y z : X) (l j : list X),
+    x :: y :: l = nil ->
+    x = z.
 Proof.
-intros X x y z l j.
-intros H.
-inversion H.
+intros.
+discriminate.
 Qed.
-
