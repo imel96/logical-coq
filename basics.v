@@ -171,3 +171,40 @@ reflexivity.
 simpl.
 reflexivity.
 Qed.
+
+Inductive comparison : Set :=
+  | Eq : comparison (* "equal" *)
+  | Lt : comparison (* "less than" *)
+  | Gt : comparison.
+
+Inductive letter : Type :=
+  | A | B | C | D | F.
+
+Definition letter_comparison (l1 l2 : letter) : comparison :=
+  match l1, l2 with
+  | A, A => Eq
+  | A, _ => Gt
+  | B, A => Lt
+  | B, B => Eq
+  | B, _ => Gt
+  | C, (A | B) => Lt
+  | C, C => Eq
+  | C, _ => Gt
+  | D, (A | B | C) => Lt
+  | D, D => Eq
+  | D, _ => Gt
+  | F, (A | B | C | D) => Lt
+  | F, F => Eq
+  end.
+
+Theorem letter_comparison_Eq :
+  forall l, letter_comparison l l = Eq.
+Proof.
+intros.
+destruct l.
+reflexivity.
+reflexivity.
+reflexivity.
+reflexivity.
+reflexivity.
+Qed.
